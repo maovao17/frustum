@@ -3,8 +3,6 @@ import { auth } from "@/auth";
 import { connectDB } from "@/lib/mongodb";
 import { Post } from "@/models/Post";
 import { User } from "@/models/User";
-import type { FilterQuery, SortOrder } from "mongoose";
-
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const sort     = searchParams.get("sort") ?? "trending";
@@ -15,11 +13,11 @@ export async function GET(req: NextRequest) {
 
   await connectDB();
 
-  const filter: FilterQuery<typeof Post> = {};
+  const filter: Record<string, string> = {};
   if (tool)     filter.tool     = tool;
   if (category) filter.category = category;
 
-  const sortOrder: Record<string, SortOrder> =
+  const sortOrder: Record<string, 1 | -1> =
     sort === "new" ? { createdAt: -1 } :
     sort === "top" ? { upvotes: -1 }   :
                      { upvotes: -1 };   // trending — can add time-decay later
